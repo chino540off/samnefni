@@ -1,5 +1,5 @@
-[docker.aliases]
-r = "run -it --rm"
+[aliases.docker]
+r = { args = ["run", "-it", "--rm"] }
 
-[kubectl.aliases]
-a = "apply"
+[aliases.kubectl]
+a = { args = ["apply"] }
