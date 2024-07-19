@@ -1,0 +1,7 @@
+[package]
+name = "samnefni"
+description = "'samnefni' means 'alias' in icelandic."
+version = "0.1.0"
+authors = ["Olivier Detour <detour.olivier@gmail.com>"]
+
+[dependencies]
