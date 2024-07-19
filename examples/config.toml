@@ -1,0 +1,5 @@
+[docker.aliases]
+r = "run -it --rm"
+
+[kubectl.aliases]
+a = "apply"
