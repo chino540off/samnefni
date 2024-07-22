@@ -1,3 +1,9 @@
+extern crate serde;
+
+mod config;
+mod model;
+
 fn main() {
-    println!("Hello World!");
+    let conf = config::Config::new();
+    println!("{:?}", conf);
 }
