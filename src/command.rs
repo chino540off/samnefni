@@ -8,10 +8,10 @@ pub struct Command {
 
 impl Command {
     pub fn new(arguments: model::Arguments) -> Command {
-        let program = &arguments[1..2][0];
+        let program = &arguments[0..1][0];
         Command {
             program: program.to_string(),
-            arguments: arguments[2..]
+            arguments: arguments[1..]
                 .iter()
                 .map(|argument| argument.to_string())
                 .collect(),
@@ -59,7 +59,6 @@ mod tests {
     fn command() {
         assert_eq!(
             Command::new(vec![
-                "wrapper".to_string(),
                 "cmd".to_string(),
                 "sub-cmd".to_string(),
                 "--opt".to_string(),
