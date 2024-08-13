@@ -29,6 +29,10 @@ impl Config {
             }
         }
     }
+
+    pub fn find_aliases(&self, program: &model::Program) -> Option<&model::Aliases> {
+        self.aliases.get(program)
+    }
 }
 
 #[cfg(test)]
