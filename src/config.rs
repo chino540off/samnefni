@@ -6,26 +6,29 @@ pub struct Config {
     pub aliases: std::collections::HashMap<model::Program, model::Aliases>,
 }
 
-fn config_path() -> String {
-    match std::env::var("SAMNEFNI_CONFIG") {
-        Ok(path) => path,
-        Err(_) => std::env!("HOME").to_owned() + "/.samnefni.toml",
+fn config_path(path: Option<std::path::PathBuf>) -> std::path::PathBuf {
+    match (path, std::env::var("SAMNEFNI_CONFIG")) {
+        (Some(path), _) => path,
+        (None, Ok(path)) => std::path::PathBuf::from(path),
+        (None, Err(_)) => {
+            std::path::PathBuf::from(std::env!("HOME").to_owned() + "/.samnefni.toml")
+        }
     }
 }
 
 impl Config {
-    pub fn new() -> Config {
-        let filename = config_path();
+    pub fn new(path: Option<std::path::PathBuf>) -> Config {
+        let filename = config_path(path);
         let contents = match std::fs::read_to_string(filename.clone()) {
             Ok(c) => c,
             Err(err) => {
-                panic!("Could not read file `{}`: {}", filename, err);
+                panic!("Could not read file `{}`: {}", filename.display(), err);
             }
         };
         match toml::from_str::<Config>(&contents) {
             Ok(config) => config,
             Err(err) => {
-                panic!("Unable to load data from `{}`: {}", filename, err);
+                panic!("Unable to load data from `{}`: {}", filename.display(), err);
             }
         }
     }
@@ -44,15 +47,18 @@ mod tests {
     fn path_default() {
         std::env::remove_var("SAMNEFNI_CONFIG");
         assert_eq!(
-            config_path(),
-            std::env::var("HOME").unwrap() + "/.samnefni.toml"
+            config_path(None),
+            std::path::PathBuf::from(std::env::var("HOME").unwrap() + "/.samnefni.toml")
         );
     }
 
     #[test]
     fn path_set() {
         std::env::set_var("SAMNEFNI_CONFIG", "/samnefni.toml");
-        assert_eq!(config_path(), "/samnefni.toml");
+        assert_eq!(
+            config_path(None),
+            std::path::PathBuf::from("/samnefni.toml")
+        );
         std::env::remove_var("SAMNEFNI_CONFIG");
     }
 

@@ -9,8 +9,8 @@ use cli::clap::CommandFactory;
 use cli::clap::Parser;
 
 fn main() {
-    let conf = config::Config::new();
     let cli = cli::Parser::parse();
+    let conf = config::Config::new(cli.config);
 
     match &cli.command {
         cli::Command::Exec { command } => {

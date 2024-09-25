@@ -6,6 +6,10 @@ extern crate clap_complete;
 #[command(version, about, long_about = None)]
 #[command(propagate_version = true)]
 pub struct Parser {
+    /// configuration path
+    #[arg(long)]
+    pub config: Option<std::path::PathBuf>,
+
     #[command(subcommand)]
     pub command: Command,
 }
