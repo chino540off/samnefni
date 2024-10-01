@@ -1,9 +1,12 @@
 pub extern crate clap;
 
 extern crate clap_complete;
+extern crate shadow_rs;
+
+shadow_rs::shadow!(build);
 
 #[derive(clap::Parser)]
-#[command(version, about, long_about = None)]
+#[command(version(build::TAG), about, long_about = None)]
 #[command(propagate_version = true)]
 pub struct Parser {
     /// configuration path
