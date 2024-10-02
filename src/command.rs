@@ -27,6 +27,7 @@ impl Command {
                 None => arguments.push(argument.clone()),
             };
         }
+        log::info!("{} {}", self.program, arguments.join(" "));
 
         Command {
             program: self.program.clone(),
@@ -44,7 +45,7 @@ impl Command {
                 child.wait().expect("failed to wait child");
             }
             Err(err) => {
-                println!("{}", err);
+                log::error!("{}", err);
             }
         };
     }
