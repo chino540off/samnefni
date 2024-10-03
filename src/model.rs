@@ -1,7 +1,8 @@
 use serde::Deserialize;
 
 pub type Program = String;
-pub type Arguments = Vec<String>;
+pub type Argument = String;
+pub type Arguments = Vec<Argument>;
 
 #[derive(Deserialize, Debug, PartialEq)]
 #[serde(untagged)]
