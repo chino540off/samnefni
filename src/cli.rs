@@ -20,7 +20,13 @@ pub struct Parser {
 #[derive(clap::Subcommand)]
 pub enum Command {
     /// Execute a command and tries to bind aliases
-    Exec { command: Vec<String> },
+    Exec {
+        /// configuration path
+        #[arg(long)]
+        dry_run: bool,
+
+        command: Vec<String>,
+    },
     /// Generate completion for a resquested shell
     Completion { shell: clap_complete::Shell },
 }
