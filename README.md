@@ -5,7 +5,7 @@
 ## Introduction
 'samnefni' means 'alias' in icelandic.
 
-This tool create aliases like [git aliases](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases) but for any command.
+This tool creates aliases like [git aliases](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases) but for any command.
 
 I always run `docker run -it --rm ` command, but it is too long to write. I would like to write something shorter like `d r`.
 
@@ -16,12 +16,20 @@ Configuration is based on a `toml` file. You can specify path of this command wh
 Configuration example:
 ```toml
 [aliases.docker]
-r = { args = ["run", "-it", "--rm"] }
-e = { args = ["exec", "-it"] }
+r = "run -it --rm"
 
 [aliases.kubectl]
-a = { args = ["apply"] }
+a = "apply -f..."
 ```
+
+`[aliases.docker]` defines an alias called `r` with "simple" options and will be expanded with `run -it --rm`.
+If you call `samnefni exec docker r arg1 arg2 arg3`, the command line will be
+`docker run -it --rm arg1 arg2 arg3`.
+
+`[aliases.kubectl]` defines an alias called `a` with a "fold" option `-f`. Expansion will take extra arguments
+and prefix with the specified option. If you call `samnefni exec kubectl a arg1 arg2 arg3`, the command line
+will be `kubectl apply -f arg1 -f arg2 -f arg3`.
+
 
 ## How to use it
 
