@@ -3,6 +3,12 @@ pub extern crate clap;
 extern crate clap_complete;
 extern crate shadow_rs;
 
+use crate::config;
+
+use self::clap::CommandFactory;
+
+use command;
+
 shadow_rs::shadow!(build);
 
 #[derive(clap::Parser)]
@@ -17,20 +23,67 @@ pub struct Parser {
     pub command: Command,
 }
 
+#[derive(Debug, clap::Args)]
+pub struct Execute {
+    /// configuration path
+    #[arg(long)]
+    dry_run: bool,
+
+    command: Vec<String>,
+}
+
+impl Execute {
+    pub fn run(&self, conf: config::Config) {
+        let cmd = command::Command::new(self.command.to_vec());
+
+        let cmd = match conf.find_aliases(&cmd.program) {
+            Some(aliases) => cmd.resolve(aliases),
+            None => cmd,
+        };
+
+        if !self.dry_run {
+            cmd.execute();
+        }
+    }
+}
+
+#[derive(Debug, clap::Args)]
+pub struct Completion {
+    shell: clap_complete::Shell,
+}
+
+impl Completion {
+    fn print_completions(&self, cmd: &mut clap::Command) {
+        clap_complete::generate(
+            self.shell,
+            cmd,
+            cmd.get_name().to_string(),
+            &mut std::io::stdout(),
+        );
+    }
+
+    pub fn run(&self) {
+        let mut cmd = Parser::command();
+        self.print_completions(&mut cmd);
+    }
+}
+
 #[derive(clap::Subcommand)]
 pub enum Command {
     /// Execute a command and tries to bind aliases
-    Exec {
-        /// configuration path
-        #[arg(long)]
-        dry_run: bool,
+    #[clap(aliases = &["e", "exec"])]
+    Execute(Execute),
 
-        command: Vec<String>,
-    },
     /// Generate completion for a resquested shell
-    Completion { shell: clap_complete::Shell },
+    #[clap(aliases = &["c", "comp"])]
+    Completion(Completion),
 }
 
-pub fn print_completions<G: clap_complete::Generator>(gen: G, cmd: &mut clap::Command) {
-    clap_complete::generate(gen, cmd, cmd.get_name().to_string(), &mut std::io::stdout());
+impl Command {
+    pub fn run(&self, conf: config::Config) {
+        match self {
+            Command::Execute(exec) => exec.run(conf),
+            Command::Completion(completion) => completion.run(),
+        }
+    }
 }
