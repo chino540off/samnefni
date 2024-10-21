@@ -62,14 +62,15 @@ impl Command {
             program: self.program.clone(),
             arguments,
         };
-        log::debug!("{} -> {}", self, result);
+        log::debug!("'{}' -> '{}'", self, result);
         result
     }
 
     pub fn execute(&self) {
-        log::info!("execute {}", self);
-        match std::process::Command::new(self.program.clone())
-            .args(self.arguments.clone())
+        log::info!("execute '{}'", self);
+        match std::process::Command::new("sh")
+            .arg("-c")
+            .arg(format!("{}", self))
             .envs(std::env::vars())
             .spawn()
         {
@@ -85,7 +86,7 @@ impl Command {
 
 impl std::fmt::Display for Command {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "\"{}\" {}", self.program, self.arguments.join(" "))
+        write!(f, "{} {}", self.program, self.arguments.join(" "))
     }
 }
 
