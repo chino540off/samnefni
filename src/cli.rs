@@ -3,11 +3,10 @@ pub extern crate clap;
 extern crate clap_complete;
 extern crate shadow_rs;
 
+use crate::command;
 use crate::config;
 
 use self::clap::CommandFactory;
-
-use command;
 
 shadow_rs::shadow!(build);
 

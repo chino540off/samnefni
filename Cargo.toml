@@ -4,6 +4,7 @@ description = "'samnefni' means 'alias' in icelandic."
 version = "1.0.0"
 authors = ["Olivier Detour <detour.olivier@gmail.com>"]
 build = "build.rs"
+edition = "2021"
 
 [dependencies]
 toml = "0.8"

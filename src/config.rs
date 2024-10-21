@@ -1,5 +1,6 @@
-use model;
 use serde::Deserialize;
+
+use crate::model;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
