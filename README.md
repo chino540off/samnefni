@@ -49,3 +49,51 @@ Python 3.12.4 (main, Jul 23 2024, 07:23:10) [GCC 12.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>>
 ```
+
+## Examples
+### Simple replacement
+```toml
+[aliases.docker]
+# list images
+il = "image ls"
+```
+
+```sh
+alias d='samnefni exec docker --'
+RUST_LOG=debug d il
+[2024-10-21T09:18:58Z DEBUG samnefni::command] docker il -> docker image ls
+[2024-10-21T09:18:58Z INFO  samnefni::command] execute docker image ls
+REPOSITORY                                 TAG                            IMAGE ID       CREATED         SIZE
+...
+```
+
+### Fold expressions
+```toml
+[aliases.kubectl]
+# apply multiple files
+a = "apply -f..."
+```
+
+```sh
+alias k='samnefni exec kubectl --'
+RUST_LOG=debug k a $(find manifests -name '*.yaml')
+[2024-10-21T09:25:02Z DEBUG samnefni::command] 'kubectl a manifests/service.yaml manifests/ingress.yaml manifests/deployment.yaml manifests/serviceaccount.yaml' -> 'kubectl apply -f manifests/service.yaml -f manifests/ingress.yaml -f manifests/deployment.yaml -f manifests/serviceaccount.yaml'
+[2024-10-21T09:25:02Z INFO  samnefni::command] execute 'kubectl apply -f manifests/service.yaml -f manifests/ingress.yaml -f manifests/deployment.yaml -f manifests/serviceaccount.yaml'
+...
+```
+
+### Shell expressions
+```toml
+[aliases.docker]
+# image remove with pattern
+ir = "image rm $(docker image ls | grep ... | tr -s ' ' | cut -d' ' -f 3)"
+```
+
+```sh
+alias d='samnefni exec docker --'
+RUST_LOG=debug d c python
+[2024-10-21T09:29:23Z DEBUG samnefni::command] 'docker ir python' -> 'docker image rm $(docker image ls | grep python | tr -s ' ' | cut -d' ' -f 3)'
+[2024-10-21T09:29:23Z INFO  samnefni::command] execute 'docker image rm $(docker image ls | grep python | tr -s ' ' | cut -d' ' -f 3)'
+Untagged: python:3
+...
+```
