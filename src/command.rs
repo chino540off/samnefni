@@ -25,13 +25,7 @@ fn expand_arguments(
             }
         }
     }
-    arguments.extend(
-        arg_iter
-            .as_slice()
-            .iter()
-            .map(|arg| arg.clone())
-            .collect::<Vec<_>>(),
-    );
+    arguments.extend(arg_iter.as_slice().to_vec());
     arguments
 }
 
@@ -53,7 +47,7 @@ impl Command {
 
         if let Some(arg) = arg_iter.next() {
             arguments = match aliases.get(arg) {
-                Some(model::Arguments(alias_args)) => expand_arguments(&alias_args, &mut arg_iter),
+                Some(model::Arguments(alias_args)) => expand_arguments(alias_args, &mut arg_iter),
                 None => self.arguments.clone(),
             }
         }
