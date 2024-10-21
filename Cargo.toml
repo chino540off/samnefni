@@ -9,7 +9,7 @@ edition = "2021"
 [dependencies]
 toml = "0.8"
 serde = { version = "1.0", features = ["derive"] }
-clap = { version = "4.5", features = ["derive"] }
+clap = { version = "4.5", features = ["derive", "string"] }
 clap_complete = { version = "4.5" }
 shadow-rs = { version = "0.35.0" }
 log = "0.4"

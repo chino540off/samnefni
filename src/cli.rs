@@ -6,7 +6,7 @@ extern crate shadow_rs;
 use crate::command;
 use crate::config;
 
-use self::clap::CommandFactory;
+use crate::cli::clap::CommandFactory;
 
 shadow_rs::shadow!(build);
 
@@ -48,7 +48,12 @@ impl Execute {
 
 #[derive(Debug, clap::Args)]
 pub struct Completion {
+    /// target shell
+    #[arg(long)]
     shell: clap_complete::Shell,
+
+    /// Alias command
+    command: Option<String>,
 }
 
 impl Completion {
@@ -61,8 +66,33 @@ impl Completion {
         );
     }
 
-    pub fn run(&self) {
-        let mut cmd = Parser::command();
+    pub fn run(&self, conf: config::Config) {
+        let mut cmd = match &self.command {
+            Some(command) => match conf.aliases.get(command) {
+                Some(aliases) => clap::Command::new(format!("samnefni-{}", command))
+                    .about(format!("run '{}' command", command))
+                    .disable_help_flag(true)
+                    .disable_help_subcommand(true)
+                    .disable_version_flag(true)
+                    .subcommands(
+                        aliases
+                            .iter()
+                            .map(|(alias, arguments)| {
+                                clap::Command::new(alias.clone())
+                                    .about(format!("{}", arguments))
+                                    .disable_help_flag(true)
+                                    .disable_help_subcommand(true)
+                                    .disable_version_flag(true)
+                            })
+                            .collect::<Vec<clap::Command>>(),
+                    ),
+                None => {
+                    log::error!("no command found");
+                    std::process::exit(1)
+                }
+            },
+            None => Parser::command(),
+        };
         self.print_completions(&mut cmd);
     }
 }
@@ -82,7 +112,7 @@ impl Command {
     pub fn run(&self, conf: config::Config) {
         match self {
             Command::Execute(exec) => exec.run(conf),
-            Command::Completion(completion) => completion.run(),
+            Command::Completion(completion) => completion.run(conf),
         }
     }
 }
