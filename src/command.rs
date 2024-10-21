@@ -25,13 +25,7 @@ fn expand_arguments(
             }
         }
     }
-    arguments.extend(
-        arg_iter
-            .as_slice()
-            .iter()
-            .map(|arg| arg.clone())
-            .collect::<Vec<_>>(),
-    );
+    arguments.extend(arg_iter.as_slice().to_vec());
     arguments
 }
 
@@ -53,7 +47,7 @@ impl Command {
 
         if let Some(arg) = arg_iter.next() {
             arguments = match aliases.get(arg) {
-                Some(model::Arguments(alias_args)) => expand_arguments(&alias_args, &mut arg_iter),
+                Some(model::Arguments(alias_args)) => expand_arguments(alias_args, &mut arg_iter),
                 None => self.arguments.clone(),
             }
         }
@@ -62,14 +56,15 @@ impl Command {
             program: self.program.clone(),
             arguments,
         };
-        log::debug!("{} -> {}", self, result);
+        log::debug!("'{}' -> '{}'", self, result);
         result
     }
 
     pub fn execute(&self) {
-        log::info!("execute {}", self);
-        match std::process::Command::new(self.program.clone())
-            .args(self.arguments.clone())
+        log::info!("execute '{}'", self);
+        match std::process::Command::new("sh")
+            .arg("-c")
+            .arg(format!("{}", self))
             .envs(std::env::vars())
             .spawn()
         {
@@ -85,7 +80,7 @@ impl Command {
 
 impl std::fmt::Display for Command {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "\"{}\" {}", self.program, self.arguments.join(" "))
+        write!(f, "{} {}", self.program, self.arguments.join(" "))
     }
 }
 
