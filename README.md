@@ -97,3 +97,29 @@ RUST_LOG=debug d c python
 Untagged: python:3
 ...
 ```
+
+## Completion
+`samnefni` provides completion support for aliases via [clap module](https://github.com/clap-rs/clap/tree/master/clap_complete).
+It supports most of the common shells like `bash`, `zsh` or `fish`.
+```sh
+samnefni completion --shell zsh docker > $somewhere/_samnefni-docker
+```
+
+You can also generate completion for `samnefni` itself without `command` argument.
+```sh
+samnefni completion --shell zsh > $somewhere/_samnefni
+```
+
+### Zsh support
+
+```zsh
+# add docker alias
+alias d="samnefni exec docker --"
+samnefni completion --shell zsh docker > ${ZSH_COMPLETION_LOCAL}/_samnefni-docker
+compdef _samnefni-docker d
+
+# ...
+
+setopt complete_aliases
+autoload -Uz compinit && compinit
+```

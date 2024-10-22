@@ -21,6 +21,15 @@ impl From<&str> for Argument {
     }
 }
 
+impl std::fmt::Display for Argument {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            Argument::Fold(arg) => write!(f, "{}...", arg),
+            Argument::Simple(arg) => write!(f, "{}", arg),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct Arguments(pub Vec<Argument>);
 
@@ -31,6 +40,20 @@ impl<'de> serde::Deserialize<'de> for Arguments {
     {
         let s = String::deserialize(deserializer)?;
         Ok(Arguments(s.split(' ').map(From::from).collect()))
+    }
+}
+
+impl std::fmt::Display for Arguments {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.0
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<String>>()
+                .join(" ")
+        )
     }
 }
 
